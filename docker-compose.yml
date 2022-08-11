@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  aws-glue:
+    # command must be wrapped with single-quotes: it is passed to the 
+    # entrypoint as a single argument "pyspark" executable
+    command: |
+      ' spark-submit \
+        --jars /extra_jars/force-partner-api-40.0.0.jar,/extra_jars/force-wsc-40.0.0.jar,/extra_jars/salesforce-wave-api-1.0.9.jar,/extra_jars/spark-salesforce_2.11-1.1.1.jar \
+        /home/glue_user/workspace/salesforce-etl.py
+      '
+    image: amazon/aws-glue-libs:glue_libs_2.0.0_image_01
+    volumes:
+      - ./glue/salesforce-etl.py:/home/glue_user/workspace/salesforce-etl.py
+      - ./glue/maven_jars:/extra_jars/
+    env_file:
+      - .env
+    environment:
+      DISABLE_SSL: "true"
+      # these come from the .env file
+      SALESFORCE_USERNAME: $USERNAME
+      SALESFORCE_PASSWORD: $PASSWORD
+      SALESFORCE_SECURITY_TOKEN: $SECURITY_TOKEN
+    ports:
+      - 4040:4040
+      - 18080:18080
+      - 8998:8998
+      - 8888:8888
+
+

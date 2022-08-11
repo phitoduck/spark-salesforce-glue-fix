@@ -1,1 +1,3 @@
-./glue/python-packages
+glue/python-packages
+**.env
+**venv/
