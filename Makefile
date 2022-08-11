@@ -2,6 +2,7 @@
 # the entrypoint/run command defined in the compose file
 # cause the container to execute salesforce-etl.py and then exit
 run-etl-in-docker:
+	touch .env || echo ".env file already exists"
 	docker-compose up
 
 # helper to download .jar files needed for the springml/spark-salesforce
