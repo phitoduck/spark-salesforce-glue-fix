@@ -20,14 +20,57 @@ SECURITY_TOKEN = os.environ.get("SALESFORCE_SECURITY_TOKEN", "dummy-token")
 
 PASSWORD_WITH_TOKEN = PASSWORD + SECURITY_TOKEN
 
-print("CREDENTIALS")
-print(USERNAME)
-print(PASSWORD_WITH_TOKEN)
-
-
 #####################
 # --- Spark Job --- #
 #####################
+
+SOQL_STMT = """\
+SELECT id,
+       isdeleted,
+       accountid,
+       isprivate,
+       NAME,
+       description,
+       stagename,
+       amount,
+       probability,
+       expectedrevenue,
+       totalopportunityquantity,
+       closedate,
+       type,
+       nextstep,
+       leadsource,
+       isclosed,
+       iswon,
+       forecastcategory,
+       forecastcategoryname,
+       campaignid,
+       hasopportunitylineitem,
+       pricebook2id,
+       ownerid,
+       createddate,
+       createdbyid,
+       lastmodifieddate,
+       lastmodifiedbyid,
+       systemmodstamp,
+       lastactivitydate,
+       laststagechangedate,
+       fiscal,
+       contactid,
+       lastvieweddate,
+       lastreferenceddate,
+       hasopenactivity,
+       hasoverduetask,
+       lastamountchangedhistoryid,
+       lastclosedatechangedhistoryid,
+       deliveryinstallationstatus__c,
+       trackingnumber__c,
+       ordernumber__c,
+       currentgenerators__c,
+       maincompetitors__c
+FROM   opportunity 
+LIMIT  10
+"""
 
 def run():
     sc = SparkContext.getOrCreate()
@@ -35,15 +78,13 @@ def run():
     spark = glueContext.spark_session
     job = Job(glueContext)
 
-    soql = "SELECT Phone FROM opportunity"
-
     df = (
         spark
             .read
             .format("com.springml.spark.salesforce")
             .option("username", USERNAME)
             .option("password", PASSWORD_WITH_TOKEN)
-            .option("soql", soql)
+            .option("soql", SOQL_STMT)
             .option("bulk", True)
             # Opportunity.LastStageChangeDate is only availaable in API v52
             .option("version", 52)

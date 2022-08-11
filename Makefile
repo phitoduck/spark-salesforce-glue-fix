@@ -12,3 +12,11 @@ fetch-maven-dependencies:
 	source venv/bin/activate \
 		&& python -m pip install -r ./glue/fetch-maven.requirements.txt \
 		&& python ./glue/fetch_maven_jars.py
+
+# this is useful for development in VS Code; you can install the
+# "Remote - Containers" (id: ms-vscode-remote.remote-containers) extension
+# which allows you to install VS Code into this running container. This
+# is useful for getting autocompletion and syntax highlighting when editing
+# the Glue python script
+run-aws-glue-container-that-hangs:
+	docker-compose run --entrypoint '/bin/bash -c' aws-glue cat
